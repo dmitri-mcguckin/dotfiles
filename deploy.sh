@@ -11,6 +11,7 @@ function clean(){
 }
 
 MODE=$1
+INSTALL_PATH=$HOME
 clean
 
 if [[ -z $MODE ]]; then
@@ -25,17 +26,12 @@ else
 	usage "invalid shell!"
 fi
 
-for file in ${FILES[@]}; do
-	if [[ $(is_blacklisted $file) == "false" ]]; then
-		echo "f: $file"
-	fi
-done
-
 cp -r common build
 cd build/common
-mv .* ..
-cd -
+mv .* .. > /dev/null 2>&1
+cd ../..
 rm -rf build/common
-echo $PWD
+echo "Installing dot files to: $INSTALL_PATH"
+mv build/.* $INSTALL_PATH > /dev/null  2>&1
 
-if [[ -n $(command -v uperm) ]]; then uperm -c -y -r; fi
+if [[ -n $(command -v uperm) ]]; then uperm -c -y -r > /dev/null 2>&1; fi
