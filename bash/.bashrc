@@ -1,6 +1,14 @@
 #!/bin/bash
 
-# Misc
+# Unsafe user install
+source ~/.rcutils
+# End of user install
+
+# Safe user install
+load_file ~/.aliases
+load_file ~/.keys
+
+# User-defined bash settings
 set completion-ignore-case on
 
 HISTFILE="$HOME/.history"
@@ -13,11 +21,5 @@ setopt hist_ignore_space
 setopt inc_append_history
 setopt share_history
 
-# Unsafe user install
-source ~/.rcutils.sh
-# End of unsafe user install
-
-# Safe user install
-load_file ~/.aliases.sh
-load_file ~/.keys.sh
-load_file ~/.bss.sh
+# Start the shell
+load_file ~/.shell-start

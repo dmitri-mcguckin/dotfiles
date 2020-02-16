@@ -14,6 +14,10 @@ function say(){
     return 0
 }
 
+function is_installed(){
+	$(command -v $1)
+}
+
 function load_file(){
 	if [ -f $1 ]; then
 		source $1
