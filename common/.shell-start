@@ -2,8 +2,10 @@
 
 # Load shell
 clear
-neofetch
-echo -e "Today's date is: $(date)\n" | lolcat
+
+if [[ -n $(command -v neofetch) ]]; then neofetch; fi
+if [[ -n $(command -v lolcat) ]]; then echo -e "Today's date is: $(date)\n" | lolcat;
+else echo -e "Today's date is: $(date)\n"; fi
 
 # Start the shell if on TTY1
 if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
