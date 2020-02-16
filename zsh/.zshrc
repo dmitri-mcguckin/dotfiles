@@ -1,11 +1,3 @@
-# Unsafe user install
-source ~/.rcutils
-# End of user install
-
-# Safe user install
-load_file ~/.aliases
-load_file ~/.keys
-
 # Path to oh-my-zsh installation
 export ZSH="$HOME/.oh-my-zsh"
 export TERM="xterm-256color"
@@ -127,6 +119,14 @@ fi
 
 # Compilation flags
 export ARCHFLAGS="-arch x86_64"
+
+# Unsafe user install
+source ~/.rcutils
+# End of user install
+
+# Safe user install
+load_file ~/.aliases
+load_file ~/.keys
 
 # Start the shell
 load_file ~/.shell-start
