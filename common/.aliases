@@ -11,3 +11,5 @@ alias umntext="sudo umount ~/external_drive"
 
 alias iup="sudo ip link set $(iface) up"
 alias idown="sudo ip link set $(iface) down"
+
+alias dmod="chmod -R 700"
