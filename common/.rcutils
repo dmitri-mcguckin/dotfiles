@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
 function say(){
     if   [[ $1 == 0 ]]; then MODE="INFO"
@@ -63,4 +63,43 @@ function loop(){
 		sleep 1
 
 	done
+}
+
+function fgif(){
+	VIDEO=$1
+	NAME=$(echo $VIDEO | cut -d. -f1)
+	GIF="$NAME.gif"
+	PALETTE="$NAME""_palette.png"
+	START=$2
+	LENGTH=$3
+	CROP=$4
+	OFFSET=$5
+	SCALE=$6
+
+	if [[ -n $START ]]; then START="-ss $START"; fi
+	if [[ -n $LENGTH ]]; then LENGTH="-t $LENGTH"; fi
+	if [[ -n $CROP ]]; then
+		if [[ $CROP =~ 'x'  ]]; then
+			C_WIDTH=$(echo $CROP | cut -d'x' -f1)
+			C_HEIGHT=$(echo $CROP | cut -d'x' -f2)
+			CROP="crop=$C_WIDTH:$C_HEIGHT"
+		elif [[ $CROP =~ ':'  ]]; then CROP="crop=$CROP"; fi	
+	fi
+	if [[ -n $OFFSET ]]; then
+		if [[ $OFFSET =~ 'x'  ]]; then
+			C_WIDTH=$(echo $OFFSET | cut -d'x' -f1)
+			C_HEIGHT=$(echo $OFFSET | cut -d'x' -f2)
+			OFFSET=":$C_WIDTH:$C_HEIGHT"
+		elif [[ $OFFSET =~ ':'  ]]; then OFFSET=":$OFFSET";	fi	
+	fi
+	if [[ -n "$CROP$OFFSET" ]]; then CROP_OFF="$CROP$OFFSET,"; fi
+	if [[ -z $SCALE ]]; then SCALE="1.0"; fi
+	SCALE=$(echo $((1800 * $SCALE )) | cut -d. -f1)
+
+	GEN_CROP="-vf "$CROP_OFF"fps=30,scale=$SCALE:-1:flags=lanczos,palettegen"
+	USE_CROP="-filter_complex "$CROP_OFF"fps=30,scale=$SCALE:-1:flags=lanczos[x];[x][1:v]paletteuse"
+
+	ffmpeg -y $(echo $START) $(echo $LENGTH) -i $VIDEO $(echo $GEN_CROP) $PALETTE
+	if [[ $? == 0 ]]; then ffmpeg -y $(echo $START) $(echo $LENGTH) -i $VIDEO -i $PALETTE $(echo $USE_CROP) $GIF; fi
+	rm -rf $PALETTE
 }
