@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 # Path to oh-my-zsh installation
 export ZSH="$HOME/.oh-my-zsh"
 export TERM="xterm-256color"
@@ -80,26 +82,26 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(   archlinux,
-            colorize,
-            docker,
-            encode64,
-            git,
-            git-extras,
-            history,
-            jsontools,
-            ng,
-            node,
-            npm,
-            pip,
-            pyenv,
-            pylint,
-            python,
-            screen,
-            ssh-agent,
-            sudo,
-            systemd,
-            tmux)
+plugins=(archlinux
+         boot2docker
+         colorize
+         docker
+         encode64
+         git
+         git-extras
+         history
+         jsontools
+         ng
+         node
+         npm
+         pip
+         pyenv
+         pylint
+         python
+         screen
+         ssh-agent
+         sudo
+         systemd)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -120,11 +122,10 @@ fi
 # Compilation flags
 export ARCHFLAGS="-arch x86_64"
 
-# Unsafe user install
+# Unsafe file load
 source ~/.rcutils
-# End of user install
 
-# Safe user install
+# Safe file loads
 load_file ~/.aliases
 load_file ~/.keys
 

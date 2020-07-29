@@ -1,28 +1,40 @@
 #!/usr/bin/env zsh
 
 function say(){
-    if   [[ $1 == 0 ]]; then MODE="INFO"
-    elif [[ $1 == 1 ]]; then MODE="WARN"
-    elif [[ $1 == 2 ]]; then MODE="ERROR"
-    elif [[ $1 == 3 ]]; then MODE="DEBUG";
+    if   [[ $1 == 0 ]]; then MODE="\e[36mINFO\e[0m"
+    elif [[ $1 == 1 ]]; then MODE="\e[33mWARN\e[0m"
+    elif [[ $1 == 2 ]]; then MODE="\e[31mERROR\e[0m"
+    elif [[ $1 == 3 ]]; then MODE="\e[34mDEBUG\e[0m";
     else
-        say 2 "Expected mode [0-3], got: $1"
+        say 2 "say() failure: Expected mode [0-3], got: $1"
         return 1
     fi
 
-	echo -e "[$MODE]: $2"
-    return 0
+	   echo -e "\e[97m[$MODE\e[97m]: $2\e[0m"
 }
 
 function is_installed(){
-	$(command -v $1)
+  which $1 > /dev/null 2>&1
+  if [[ $? == 0 ]]; then
+    echo "true"
+  else
+    echo "false"
+  fi
+}
+
+function conditional_alias(){
+  if [[ "$(is_installed $1)" == "true" ]]; then
+    alias $1=$2
+  else
+    echo "Command $1 does not exist! Skipping alias!"
+  fi
 }
 
 function load_file(){
 	if [ -f $1 ]; then
 		source $1
 	else
-		say 1 "Skipping file: $1\n\tDoes not exist!"
+		say 1 "File \"$1\" does not exist! Skipping RC loading!"
 	fi
     return 0
 }
@@ -33,73 +45,4 @@ function iface(){
     IFACE=$(echo $INT | cut -d ' ' -f 2)
     echo $IFACE
     return 0
-}
-
-function lab(){
-	if [[ -z $1 ]]; then
-		FILE=Example
-	else
-		FILE=$(echo $1 | cut -d. -f1 | xargs)
-	fi
-
-	if [[ -f $FILE.java ]]; then
-		javac $FILE.java
-		java $FILE
-	else
-		echo -e "File not found: $FILE.java"
-	fi
-}
-
-function loop(){
-	BASE=$1
-	ARGS=${@:2}
-	ARGS="$(echo $ARGS | xargs)"
-
-	while [ 1 ]; do
-		clear
-		echo "$(date)"
-		echo $OUTPUT
-		OUTPUT=$($BASE $ARGS)
-		sleep 1
-
-	done
-}
-
-function fgif(){
-	VIDEO=$1
-	NAME=$(echo $VIDEO | cut -d. -f1)
-	GIF="$NAME.gif"
-	PALETTE="$NAME""_palette.png"
-	START=$2
-	LENGTH=$3
-	CROP=$4
-	OFFSET=$5
-	SCALE=$6
-
-	if [[ -n $START ]]; then START="-ss $START"; fi
-	if [[ -n $LENGTH ]]; then LENGTH="-t $LENGTH"; fi
-	if [[ -n $CROP ]]; then
-		if [[ $CROP =~ 'x'  ]]; then
-			C_WIDTH=$(echo $CROP | cut -d'x' -f1)
-			C_HEIGHT=$(echo $CROP | cut -d'x' -f2)
-			CROP="crop=$C_WIDTH:$C_HEIGHT"
-		elif [[ $CROP =~ ':'  ]]; then CROP="crop=$CROP"; fi	
-	fi
-	if [[ -n $OFFSET ]]; then
-		if [[ $OFFSET =~ 'x'  ]]; then
-			C_WIDTH=$(echo $OFFSET | cut -d'x' -f1)
-			C_HEIGHT=$(echo $OFFSET | cut -d'x' -f2)
-			OFFSET=":$C_WIDTH:$C_HEIGHT"
-		elif [[ $OFFSET =~ ':'  ]]; then OFFSET=":$OFFSET";	fi	
-	fi
-	if [[ -n "$CROP$OFFSET" ]]; then CROP_OFF="$CROP$OFFSET,"; fi
-	if [[ -z $SCALE ]]; then SCALE="1.0"; fi
-	SCALE=$(echo $((1800 * $SCALE )) | cut -d. -f1)
-
-	GEN_CROP="-vf "$CROP_OFF"fps=30,scale=$SCALE:-1:flags=lanczos,palettegen"
-	USE_CROP="-filter_complex "$CROP_OFF"fps=30,scale=$SCALE:-1:flags=lanczos[x];[x][1:v]paletteuse"
-
-	ffmpeg -y $(echo $START) $(echo $LENGTH) -i $VIDEO $(echo $GEN_CROP) $PALETTE
-	if [[ $? == 0 ]]; then ffmpeg -y $(echo $START) $(echo $LENGTH) -i $VIDEO -i $PALETTE $(echo $USE_CROP) $GIF; fi
-	rm -rf $PALETTE
 }

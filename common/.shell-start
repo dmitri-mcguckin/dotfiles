@@ -1,15 +1,27 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
-# Load shell
-clear
+# Unsafe file load
+source ~/.rcutils
 
-if [[ -n $(command -v neofetch) ]]; then neofetch; fi
-if [[ -n $(command -v lolcat) ]]; then echo -e "Today's date is: $(date)\n" | lolcat;
+# Safe commands
+if [[ "$(is_installed neofetch)" == "true" ]]; then neofetch; fi
+
+if [[ "$(is_installed lolcat)" == "true" ]]; then echo -e "Today's date is: $(date)\n" | lolcat;
 else echo -e "Today's date is: $(date)\n"; fi
 
-# Start the shell if on TTY1
-if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
+
+# Start the XOrg Desktop Manager if session is on TTY1
+#		But first display the magic train (sl) if it's installed
+if [[ -z "$DISPLAY" ]] && [[ "$(tty)" == "/dev/tty1" ]]; then
 	clear
-	sl | lolcat
+
+	if [[ "$(is_installed sl)" == "true" ]]; then
+		if [[ "$(is_installed lolcat)" == "true" ]]; then
+			sl | lolcat
+		else
+			sl
+		fi
+	fi
+
 	startx
 fi
