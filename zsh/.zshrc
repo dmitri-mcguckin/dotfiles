@@ -105,6 +105,9 @@ plugins=(archlinux
 
 source $ZSH/oh-my-zsh.sh
 
+# System-level environment variables
+source /etc/environment
+
 # User configuration
 
 export MANPATH="/usr/local/man:$MANPATH"

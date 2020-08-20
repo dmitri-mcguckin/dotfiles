@@ -16,3 +16,5 @@ alias reload="exec $SHELL"
 
 alias mount-external="sudo mount -o uid=ivo -o gid=ivo /dev/sda1 ~/external_drive"
 alias unmount-external="sudo umount ~/external_drive"
+
+alias psearch="pip freeze | grep -i"
